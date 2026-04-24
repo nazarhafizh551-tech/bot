@@ -5,17 +5,17 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds]
 });
 
-const TOKEN = "MTQ5NDk2NTk5NTcwNDQxODQyOA.Gqhavs.xivKVlrreTRz58rmRFCZ9u_gRNl2LX1dsvaP5o";
-const CHANNEL_ID = "1497162320751624293";
+const TOKEN = process.env.TOKEN;
+const CHANNEL_ID = process.env.CHANNEL_ID;
 
 let sent = new Set();
 
 async function checkUGC() {
-  console.log("🌐 Launch browser...");
+  console.log("🌐 Checking UGC...");
 
   const browser = await puppeteer.launch({
     headless: "new",
-    args: ["--no-sandbox"]
+    args: ["--no-sandbox", "--disable-setuid-sandbox"]
   });
 
   const page = await browser.newPage();
@@ -29,8 +29,10 @@ async function checkUGC() {
 
     document.querySelectorAll("a").forEach(el => {
       const href = el.getAttribute("href");
+
       if (href && href.includes("/item/")) {
         const name = el.innerText.trim();
+
         if (name.length > 3) {
           data.push({
             name,
@@ -69,7 +71,7 @@ async function checkUGC() {
 }
 
 client.once("ready", () => {
-  console.log("✅ Bot hidup");
+  console.log("✅ Bot aktif");
 
   setInterval(checkUGC, 20000);
 });
